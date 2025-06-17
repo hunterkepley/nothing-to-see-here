@@ -1,56 +1,87 @@
 import datetime
-from flask import Flask, render_template, Response
 import time
-import cv2
+import io
+import logging
+import socketserver
+from http import server
+from threading import Condition
 from picamera2 import Picamera2, Preview
-from picamera2.encoders import H264Encoder
-from picamera2.outputs import FfmpegOutput
+from picamera2.encoders import H264Encoder, JpegEncoder
+from picamera2.outputs import FfmpegOutput, FileOutput
 
-app = Flask(__name__,template_folder='Templates')
-#app.config["CACHE_TYPE"] = "null"
+resolution = (2048, 1080)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+class StreamingOutput(io.BufferedIOBase):
+    def __init__(self):
+        self.frame = None
+        self.condition = Condition()
 
-def gen(t):
+    def write(self, buf):
+        with self.condition:
+            self.frame = buf
+            self.condition.notify_all()
+
+output = StreamingOutput()
+
+class StreamingHandler(server.BaseHTTPRequestHandler):
+    global output
+    def do_GET(self):
+        if self.path == '/stream.mjpg':
+            self.send_response(200)
+            self.send_header('Age', 0)
+            self.send_header('Cache-Control', 'no-cache, private')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
+            self.end_headers()
+            try:
+                while True:
+                    with output.condition:
+                        output.condition.wait()
+                        frame = output.frame
+                    self.wfile.write(b'--FRAME\r\n')
+                    self.send_header('Content-Type', 'image/jpeg')
+                    self.send_header('Content-Length', len(frame))
+                    self.end_headers()
+                    self.wfile.write(frame)
+                    self.wfile.write(b'\r\n')
+            except Exception as e:
+                logging.warning(
+                    'Removed streaming client %s: %s',
+                    self.client_address, str(e))
+        elif self.path == "/" or self.path == "/live":
+            self.path = '/Templates/index.html'
+            try:
+                file = open(self.path[1:]).read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes(file, 'utf-8'))
+            except:
+                self.send_response(404)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(b'404 - Not Found')
+        else:
+            self.send_error(404)
+            self.end_headers()
+            self.wfile.write(b'404 - Not Found')
+
+
+class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
+
+def main():
     picam = Picamera2()
-    config = picam.create_preview_configuration()
-    picam.start()
-    encoder = H264Encoder(10000000)
-    output = FfmpegOutput('static/latest.mp4')
-    picam.start_recording(encoder, output)
-    time.sleep(t)
-    picam.stop_recording()
-    print("New video created!")
-    print(datetime.datetime.now())
-    picam.close()
-        
+    picam.configure(picam.create_video_configuration(main={"size": resolution}))
+    picam.start_recording(JpegEncoder(), FileOutput(output))
+    try:
+        address = ('', 9911)
+        server = StreamingServer(address, StreamingHandler)
+        server.serve_forever()
+    finally:
+        picam.stop_recording()
 
-@app.route('/video_feed')
-def video_feed():
-    gen(10)
-    return render_template('index.html')
-
-@app.route('/video_feed2')
-def video_feed2():
-    gen(30)
-    return render_template('index.html')
-
-@app.route('/video_feed3')
-def video_feed3():
-    gen(60)
-    return render_template('index.html')
-
-@app.route('/video_feed4')
-def video_feed4():
-    gen(120)
-    return render_template('index.html')
-
-@app.route('/video_feed5')
-def video_feed5():
-    gen(240)
-    return render_template('index.html')
-
-if __name__ == '__main__': 
-    app.run(host='0.0.0.0', port=9911, debug=True, threaded=True)
+if __name__ == '__main__':
+    main()
