@@ -14,6 +14,10 @@ This is a lightweight, easy to set up camera server
 
 If there's any missing py libraries, create a virtual env using python's `venv` module. Then, source into that venv and run `pip install -r requirements.txt` to install everything needed
 
+*IMPORTANT*: Use `python -m venv --system-site-packages env` to set up the virtual environment. This uses the picamera+libcamera libraries directly from Raspbian bundled together. If you try to install `picamera2` from pip, you won't be able to install libcamera, you need the system packages.
+
+In the case of this project, the `cs` bash script is set up to source into the env for you when it runs. You may want to install packages or edit this project, source into the virtual env before doing so. You may need to edit the `cs` bash script to match your virtual env name if it is not `env`
+
 
 ## Authentication
 

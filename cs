@@ -1,4 +1,4 @@
 #!/bin/bash
 
-source /home/hunterkepley/Documents/env/bin/activate
-python /home/hunterkepley/Documents/main.py
+source env/bin/activate
+python main.py

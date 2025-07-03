@@ -3,12 +3,12 @@ import time
 import io
 import logging
 import socketserver
+import otp
 from http import server
 from threading import Condition
 from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder, JpegEncoder
 from picamera2.outputs import FfmpegOutput, FileOutput
-
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -25,6 +25,20 @@ output = StreamingOutput()
 class StreamingHandler(server.BaseHTTPRequestHandler):
     global output
     def do_GET(self):
+        if not otp.logged_in:
+            self.path = '/Templates/login.html'
+            try:
+                file = open(self.path[1:]).read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes(file, 'utf-8'))
+            except:
+                self.send_response(404)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(b'404 - Not Found')
+            return
         if self.path == '/stream.mjpg':
             self.send_response(200)
             self.send_header('Age', 0)
