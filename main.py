@@ -1,0 +1,26 @@
+import datetime
+import time
+import io
+import logging
+import socketserver
+import cam_server as cs
+from http import server
+from picamera2 import Picamera2, Preview
+from picamera2.encoders import H264Encoder, JpegEncoder
+from picamera2.outputs import FfmpegOutput, FileOutput
+
+resolution = (2048, 1080)
+
+def main():
+    picam = Picamera2()
+    picam.configure(picam.create_video_configuration(main={"size": resolution}))
+    picam.start_recording(JpegEncoder(), FileOutput(cs.output))
+    try:
+        address = ('', 9911)
+        server = cs.StreamingServer(address, cs.StreamingHandler)
+        server.serve_forever()
+    finally:
+        picam.stop_recording()
+
+if __name__ == '__main__':
+    main()

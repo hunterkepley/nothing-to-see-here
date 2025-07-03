@@ -9,7 +9,6 @@ from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder, JpegEncoder
 from picamera2.outputs import FfmpegOutput, FileOutput
 
-resolution = (2048, 1080)
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -71,17 +70,3 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-
-def main():
-    picam = Picamera2()
-    picam.configure(picam.create_video_configuration(main={"size": resolution}))
-    picam.start_recording(JpegEncoder(), FileOutput(output))
-    try:
-        address = ('', 9911)
-        server = StreamingServer(address, StreamingHandler)
-        server.serve_forever()
-    finally:
-        picam.stop_recording()
-
-if __name__ == '__main__':
-    main()
