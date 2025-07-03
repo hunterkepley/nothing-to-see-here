@@ -20,4 +20,8 @@ In the case of this project, the `cs.sh` script is set up to source into the env
 
 ## Authentication
 
-This using OTP's as security for logging into the camera. Eventually this may be added on top of a normal login, but for now, I think this is enough since the OTPs are generated via an app on my phone only. Look up how to set up an OTP app, theyre very useful, required for this, and there's some open source ones
+In progress, for now, you need to generate a `.pem` file to use this with HTTPS. Do not open on a public port until login is implemented
+
+use the following command to generate the key and cert files needed:
+`openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365`
+This is self-signing, which is not GREAT by any means. I would recommend getting your own cert

@@ -1,3 +1,4 @@
+import ssl
 import datetime
 import time
 import io
@@ -18,6 +19,7 @@ def main():
     try:
         address = ('', 9911)
         server = cs.StreamingServer(address, cs.StreamingHandler)
+        server.socket = ssl.wrap_socket(server.socket, keyfile='key.pem', certfile='cert.pem', server_side=True)
         server.serve_forever()
     finally:
         picam.stop_recording()

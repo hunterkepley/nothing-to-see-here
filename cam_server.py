@@ -3,7 +3,7 @@ import time
 import io
 import logging
 import socketserver
-import otp
+import login
 from http import server
 from threading import Condition
 from picamera2 import Picamera2, Preview
@@ -24,8 +24,17 @@ output = StreamingOutput()
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
     global output
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        body = self.rfile.read(content_length)
+        self.send_response(200)
+        self.end_headers()
+        print(body)
+        self.wfile.write(self.response.getvalue())
+
     def do_GET(self):
-        if not otp.logged_in:
+        if not login.logged_in:
             self.path = '/Templates/login.html'
             try:
                 file = open(self.path[1:]).read()
