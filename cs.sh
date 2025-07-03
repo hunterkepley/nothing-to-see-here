@@ -1,4 +1,4 @@
 #!/bin/bash
 
 source env/bin/activate
-python main.py
+python -m main.py
