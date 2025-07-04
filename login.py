@@ -1,12 +1,19 @@
 import os
-
-password_env_var_name = 'BASE64_ENCODED_PASSWORD_TO_CAM'
-username_env_var_name = 'USERNAME_TO_CAM'
+import pyotp
+import time
+from error_handler import printe
 
 # TODO: LOG OUT AFTER X MINUTES!!! OR X MINUTES WITH NO REQUESTS FROM SAME USER, SOMETHING SAFE
 logged_in = False
 
-def login(username, password):
-    base64_encoded_password = os.environ[password_env_var_name]
-    correct_username = os.environ[username_env_var_name] 
-    
+def login(code):
+    f = open('.otp_key')
+    if f == None:
+        printe('OTP Key not generated, please run "generate_key.sh"')
+
+    otp = pyotp.parse_uri(f.read())
+
+    print('\n!!!\nVerifying OTP user passed in at ', time.now(), '\n!!!\n')
+
+    logged_in = otp.verify(code)
+

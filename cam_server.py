@@ -31,6 +31,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
         print(body)
+        login.login()
         self.wfile.write(self.response.getvalue())
 
     def do_GET(self):
