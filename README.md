@@ -28,4 +28,7 @@ This is self-signing, which is not GREAT by any means. I would recommend getting
 
 OTP is used to authenticate and get past the login webpage. To generate a base32 key, please run the `generate_key.sh` script 
 
-This will save the key in a file named `.otp_key`. A QR code will be spat out in your terminal (so feel free to use SSH for this whole setup!), you can scan it and use Google Authenticator (or presumably, any OTP auth app with QR code support)
+This will save the key in a file named `.otp_key`. A QR code will be spat out in your terminal (so feel free to use SSH for this whole setup!), you can scan it and use Google Authenticator (or presumably, any OTP auth app with QR code support). FreeOTP is a good option.
+
+You will use this OTP to log into the main login page
+
