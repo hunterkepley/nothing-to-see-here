@@ -5,6 +5,7 @@ import io
 import logging
 import os
 import socketserver
+import sys
 import cam_server as cs
 from http import server
 from picamera2 import Picamera2, Preview
@@ -27,4 +28,10 @@ def main():
         picam.stop_recording()
 
 if __name__ == '__main__':
+    old_stdout = sys.stdout
+    log_file = open('logs.txt', 'w')
+    sys.stdout = log_file
     main()
+    sys.stdout = old_stdout
+    log_file.close()
+

@@ -31,6 +31,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             content_length = int(self.headers['content-length'])
             body = self.rfile.read(content_length)
             login.login(str(body), self.client_address[0])
+            print('\n!!!\nUSER WHO TRIED TO LOG IN\'S INFORMATION:\n\n',self.headers,'\n!!!\n')
             self.path = 'Templates/index.html'
             try:
                 self.send_response(301)

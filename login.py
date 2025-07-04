@@ -35,6 +35,7 @@ def login(code, ip):
         os.environ['LOGGED_IN'] = 't'
         os.environ['CLIENT_IP'] = ip
         print('\n!!!\nLogged user in!\n!!!\n')
+        print('\n!!!\nLogged in user IP address:',ip,'\n!!!\n')
     else:
         os.environ['LOGGED_IN'] = 'f'
         print('\n!!!\nDenied user\n!!!\n')

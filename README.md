@@ -32,3 +32,7 @@ This will save the key in a file named `.otp_key`. A QR code will be spat out in
 
 You will use this OTP to log into the main login page
 
+## Logging
+
+Logs will be stored in `logs.txt`. The logs contain every login attempt, as well as different actions the server chose. Use these logs to see if anyone tried to send a POST request for example :) Easy peace-of-mind
+

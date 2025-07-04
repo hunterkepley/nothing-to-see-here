@@ -4,3 +4,4 @@ __pycache__/*
 .otp_key
 *.swp
 cs
+logs.txt
