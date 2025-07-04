@@ -30,7 +30,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         if self.path == '/otp':
             content_length = int(self.headers['content-length'])
             body = self.rfile.read(content_length)
-            login.login(str(body))
+            login.login(str(body), self.client_address[0])
             self.path = 'Templates/index.html'
             try:
                 self.send_response(301)
@@ -58,7 +58,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
     def do_GET(self):
         logged_in_value = os.environ['LOGGED_IN'] == 't'
-        if not logged_in_value:
+        if not logged_in_value or self.client_address[0] != os.environ['CLIENT_IP']:
+            os.environ['LOGGED_IN'] = 'f'
             self.path = '/Templates/login.html'
             try:
                 file = open(self.path[1:]).read()

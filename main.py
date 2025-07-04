@@ -15,6 +15,7 @@ resolution = (2048, 1080)
 
 def main():
     os.environ['LOGGED_IN'] = 'f'
+    os.environ['CLIENT_IP'] = '-1'
     picam = Picamera2()
     picam.configure(picam.create_video_configuration(main={"size": resolution}))
     picam.start_recording(JpegEncoder(), FileOutput(cs.output))
