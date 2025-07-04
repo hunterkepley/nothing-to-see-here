@@ -1,4 +1,5 @@
 import datetime
+import os
 import time
 import io
 import logging
@@ -26,16 +27,38 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
     global output
 
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        body = self.rfile.read(content_length)
-        self.send_response(200)
-        self.end_headers()
-        print(body)
-        login.login()
-        self.wfile.write(self.response.getvalue())
+        if self.path == '/otp':
+            content_length = int(self.headers['content-length'])
+            body = self.rfile.read(content_length)
+            login.login(str(body))
+            self.path = 'Templates/index.html'
+            try:
+                self.send_response(301)
+                self.send_header('Location', '/')
+                self.end_headers()
+                self.wfile.write(bytes(file, 'utf-8'))
+            except:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(b'404 - Not Found')
+        elif self.path == '/logout':
+            os.environ['LOGGED_IN'] = 'f'
+            self.path = 'Templates/index.html'
+            try:
+                self.send_response(301)
+                self.send_header('Location', '/')
+                self.end_headers()
+                self.wfile.write(bytes(file, 'utf-8'))
+            except:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(b'404 - Not Found')
 
     def do_GET(self):
-        if not login.logged_in:
+        logged_in_value = os.environ['LOGGED_IN'] == 't'
+        if not logged_in_value:
             self.path = '/Templates/login.html'
             try:
                 file = open(self.path[1:]).read()
@@ -49,7 +72,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b'404 - Not Found')
             return
-        if self.path == '/stream.mjpg':
+        if self.path == '/stream.mjpg' and logged_in_value:
             self.send_response(200)
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')
@@ -71,8 +94,21 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 logging.warning(
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
-        elif self.path == "/" or self.path == "/live":
+        elif self.path == "/" and logged_in_value:
             self.path = '/Templates/index.html'
+            try:
+                file = open(self.path[1:]).read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes(file, 'utf-8'))
+            except:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(b'404 - Not Found')
+        elif self.path == "/live" and logged_in_value:
+            self.path = '/Templates/stream.html'
             try:
                 file = open(self.path[1:]).read()
                 self.send_response(200)

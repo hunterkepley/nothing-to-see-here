@@ -1,10 +1,10 @@
 import os
+import re
 import pyotp
-import time
+from datetime import datetime
 from error_handler import printe
 
 # TODO: LOG OUT AFTER X MINUTES!!! OR X MINUTES WITH NO REQUESTS FROM SAME USER, SOMETHING SAFE
-logged_in = False
 
 def login(code):
     f = open('.otp_key')
@@ -13,7 +13,19 @@ def login(code):
 
     otp = pyotp.parse_uri(f.read())
 
-    print('\n!!!\nVerifying OTP user passed in at ', time.now(), '\n!!!\n')
+    print('\n!!!\nVerifying OTP user passed in at ', datetime.now(), '\n!!!\n')
+
+    code_numbers = re.compile(r'\d+(?:\.\d+)?')
+    code = code_numbers.findall(code)[0]
+
 
     logged_in = otp.verify(code)
+
+    # TODO: Log info about user! Maybe send email/text warning! Or show on site itself!
+    if logged_in:
+        os.environ['LOGGED_IN'] = 't'
+        print('\n!!!\nLogged user in!\n!!!\n')
+    else:
+        os.environ['LOGGED_IN'] = 'f'
+        print('\n!!!\nDenied user\n!!!\n')
 

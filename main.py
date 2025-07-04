@@ -3,6 +3,7 @@ import datetime
 import time
 import io
 import logging
+import os
 import socketserver
 import cam_server as cs
 from http import server
@@ -13,13 +14,13 @@ from picamera2.outputs import FfmpegOutput, FileOutput
 resolution = (2048, 1080)
 
 def main():
+    os.environ['LOGGED_IN'] = 'f'
     picam = Picamera2()
     picam.configure(picam.create_video_configuration(main={"size": resolution}))
     picam.start_recording(JpegEncoder(), FileOutput(cs.output))
     try:
         address = ('', 9911)
         server = cs.StreamingServer(address, cs.StreamingHandler)
-        server.socket = ssl.wrap_socket(server.socket, keyfile='key.pem', certfile='cert.pem', server_side=True)
         server.serve_forever()
     finally:
         picam.stop_recording()
