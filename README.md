@@ -20,12 +20,17 @@ In the case of this project, the `cs.sh` script is set up to source into the env
 
 ## Authentication
 
-In progress, for now, you need to generate a `.pem` file to use this with HTTPS. Do not open on a public port until login is implemented
+Create a new account using `create_account.sh`
 
-use the following command to generate the key and cert files needed:
-`openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365`
-This is self-signing, which is not GREAT by any means. I would recommend getting your own cert
+After making an account, you'll need to set up OTP:
 
 OTP is used to authenticate and get past the login webpage. To generate a base32 key, please run the `generate_key.sh` script 
 
-This will save the key in a file named `.otp_key`. A QR code will be spat out in your terminal (so feel free to use SSH for this whole setup!), you can scan it and use Google Authenticator (or presumably, any OTP auth app with QR code support)
+This will save the key in a file named `.otp_key`. A QR code will be spat out in your terminal (so feel free to use SSH for this whole setup!), you can scan it and use Google Authenticator (or presumably, any OTP auth app with QR code support). FreeOTP is a good option.
+
+You will use this OTP to log into the main login page
+
+## Logging
+
+Logs will be stored in `logs.txt`. The logs contain every login attempt, as well as different actions the server chose. Use these logs to see if anyone tried to send a POST request for example :) Easy peace-of-mind
+

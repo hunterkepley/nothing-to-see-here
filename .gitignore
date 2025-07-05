@@ -2,5 +2,10 @@ env/*
 __pycache__/*
 *.pem
 .otp_key
+.users
+.user_otp_pairs
 *.swp
 cs
+logs.txt
+*/__pycache__/*
+

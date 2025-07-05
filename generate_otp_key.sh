@@ -1,4 +1,4 @@
 #!/bin/bash
 
 source env/bin/activate
-python generate_key.sh
+python scripts/generate_key.py
