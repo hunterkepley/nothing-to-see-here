@@ -6,10 +6,17 @@ This is a lightweight, easy to set up camera server
 
 ## Setup
 
-1. Set up Raspberry Pi with camera module (I recommend 3B+)
+1. Set up Raspberry Pi with camera module (I recommend 3B+ and enabling SSH)
 2. Install the default Raspbian OS onto the rpi
-3. Run `setup.sh` - Soon, this will be containerized and simple to set up, but forr now, if you want this to run when the raspberry pi starts up, you'll have to add this to systemd.
-4. Run the `cs.sh` bash script. This sources venv for you then runs the server, there may be something missing you'll need to do in the rpi settings to enable the camera
+3. `sudo apt update`
+4. Run `setup.sh` - Soon, this will be containerized and simple to set up, but for now, if you want this to run when the raspberry pi starts up, you'll have to add this to systemd.
+
+If editing/testing code, you can run `cs.sh` directly. If starting the camera *for real*, follow these steps to containerize the cam server:
+
+1. `sudo apt install docker.io`
+2. `sudo systemctl start docker`
+3. `sudo systemctl enable docker` 
+4. `sudo docker build -t ntsh .`
 
 If there's any missing py libraries, create a virtual env using python's `venv` module. Then, source into that venv and run `pip install -r requirements.txt` to install everything needed
 
@@ -20,19 +27,18 @@ In the case of this project, the `cs.sh` script is set up to source into the env
 
 ## Authentication
 
-In progress, for now, you need to generate a `.pem` file to use this with HTTPS. Do not open on a public port until login is implemented
-
-use the following command to generate the key and cert files needed:
-`openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365`
-This is self-signing, which is not GREAT by any means. I would recommend getting your own cert
-
 OTP is used to authenticate and get past the login webpage. To generate a base32 key, please run the `generate_key.sh` script 
 
 This will save the key in a file named `.otp_key`. A QR code will be spat out in your terminal (so feel free to use SSH for this whole setup!), you can scan it and use Google Authenticator (or presumably, any OTP auth app with QR code support). FreeOTP is a good option.
 
 You will use this OTP to log into the main login page
 
+Eventually, there will be username + password authentication on top of OTP, this is not implemented yet. OTP is fine for now
+
 ## Logging
 
 Logs will be stored in `logs.txt`. The logs contain every login attempt, as well as different actions the server chose. Use these logs to see if anyone tried to send a POST request for example :) Easy peace-of-mind
 
+## Contributing
+
+Please fork this repo, and make a PR onto main when you want to contribute. Ask @hunterkepley for review
