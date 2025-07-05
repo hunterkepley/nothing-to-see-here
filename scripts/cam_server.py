@@ -4,7 +4,7 @@ import time
 import io
 import logging
 import socketserver
-import login
+from scripts.login import login
 from http import server
 from threading import Condition
 from picamera2 import Picamera2, Preview
@@ -30,7 +30,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         if self.path == '/otp':
             content_length = int(self.headers['content-length'])
             body = self.rfile.read(content_length)
-            login.login(str(body), self.client_address[0])
+            login(str(body), self.client_address[0])
             print('\n!!!\nUSER WHO TRIED TO LOG IN\'S INFORMATION:\n\n',self.headers,'\n!!!\n')
             self.path = 'Templates/index.html'
             try:

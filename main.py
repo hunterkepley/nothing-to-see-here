@@ -6,7 +6,7 @@ import logging
 import os
 import socketserver
 import sys
-import cam_server as cs
+import scripts.cam_server as cs
 from http import server
 from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder, JpegEncoder
@@ -29,7 +29,7 @@ def main():
 
 if __name__ == '__main__':
     old_stdout = sys.stdout
-    log_file = open('logs.txt', 'w')
+    log_file = open('logs.txt', 'a')
     sys.stdout = log_file
     main()
     sys.stdout = old_stdout

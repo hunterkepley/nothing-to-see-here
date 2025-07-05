@@ -20,11 +20,9 @@ In the case of this project, the `cs.sh` script is set up to source into the env
 
 ## Authentication
 
-In progress, for now, you need to generate a `.pem` file to use this with HTTPS. Do not open on a public port until login is implemented
+Create a new account using `create_account.sh`
 
-use the following command to generate the key and cert files needed:
-`openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365`
-This is self-signing, which is not GREAT by any means. I would recommend getting your own cert
+After making an account, you'll need to set up OTP:
 
 OTP is used to authenticate and get past the login webpage. To generate a base32 key, please run the `generate_key.sh` script 
 
