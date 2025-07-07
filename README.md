@@ -8,8 +8,10 @@ This is a lightweight, easy to set up camera server
 
 1. Set up Raspberry Pi with camera module (I recommend 3B+)
 2. Install the default Raspbian OS onto the rpi
-3. Run `setup.sh` - Soon, this will be containerized and simple to set up, but forr now, if you want this to run when the raspberry pi starts up, you'll have to add this to systemd.
+3. Run `setup.sh` - 
 4. Run the `cs.sh` bash script. This sources venv for you then runs the server, there may be something missing you'll need to do in the rpi settings to enable the camera
+
+*note*: If you want this to run when the raspberry pi starts up, you'll have to add `cs.sh` to a systemd file of it's own. Containerization is a WIP, can't get the camera working though
 
 If there's any missing py libraries, create a virtual env using python's `venv` module. Then, source into that venv and run `pip install -r requirements.txt` to install everything needed
 
