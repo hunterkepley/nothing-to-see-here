@@ -23,6 +23,13 @@ def main():
     try:
         address = ('', 9911)
         server = cs.StreamingServer(address, cs.StreamingHandler)
+
+        # SSL
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain('cert.pem', 'key.pem')
+
+        server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
+
         server.serve_forever()
     finally:
         picam.stop_recording()
