@@ -58,7 +58,26 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.wfile.write(b'404 - Not Found')
 
     def do_GET(self):
+
+        # CSS
+        if self.path == '/style.css':
+            self.path = '/Templates/style.css'
+            try:
+                file = open(self.path[1:]).read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/css')
+                self.end_headers()
+                self.wfile.write(bytes(file, 'utf-8'))
+            except:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/css')
+                self.send_headers()
+                self.wfile.write(b'404 - Not Found')
+
+
         logged_in_value = os.environ['LOGGED_IN'] == 't'
+
+        # HTML
         if not logged_in_value or self.client_address[0] != os.environ['CLIENT_IP']:
             os.environ['LOGGED_IN'] = 'f'
             self.path = '/Templates/login.html'
@@ -70,11 +89,11 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.wfile.write(bytes(file, 'utf-8'))
             except:
                 self.send_response(404)
-                self.send_header('Content-type', 'text/html')
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 self.wfile.write(b'404 - Not Found')
             return
-        if self.path == '/stream.mjpg' and logged_in_value:
+        elif self.path == '/stream.mjpg' and logged_in_value:
             self.send_response(200)
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')
@@ -119,7 +138,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.wfile.write(bytes(file, 'utf-8'))
             except:
                 self.send_response(404)
-                self.send_header('Content-type', 'text/html')
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 self.wfile.write(b'404 - Not Found')
         else:
