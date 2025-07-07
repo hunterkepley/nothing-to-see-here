@@ -20,7 +20,19 @@ In the case of this project, the `cs.sh` script is set up to source into the env
 
 ## Authentication
 
+### SSL/TLS encryption (AKA; https)
+
+A `key.pem` and `cert.pem` set of files are required to run this. This is so your communication to the camera server is secure. Even if you are not exposing your camera to anything beyond your router, it's better to have the login secure than not
+
+You can self-sign one (example command: `openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 30 -out cert.pem`) or get a CA verified SSL from a vendor online. This is up to you, self-signing still gives you `https` and the benefits of security, but be warned most browsers will have you *Accept the risk to continue*. 
+
+### Creating an account for logging in
+
 Create a new account using `create_account.sh`
+
+Passwords are stored as a sha256 hash on the device, eventually I'd like to delete the OTP URI data that's being stored, or encrypt it somehow, but it's required to validate OTPs..
+
+### TOTP
 
 After making an account, you'll need to set up OTP:
 
@@ -32,5 +44,9 @@ You will use this OTP to log into the main login page
 
 ## Logging
 
-Logs will be stored in `logs.txt`. The logs contain every login attempt, as well as different actions the server chose. Use these logs to see if anyone tried to send a POST request for example :) Easy peace-of-mind
+Logs will be stored in `logs.txt`. The logs contain every login attempt, as well as any information the server spits out. The logs will contain information on users who visit the cam site, if you have it exposed publicly the logging should give you peace of mind. The logs file doesn't truncate by design, so you'll have to manually truncate it or delete the file if it gets too large for your liking. Maybe I'll change this using a setting menu/file eventually
+
+## Contributing
+
+To contribute, please make a fork of this repo and create an MR off of a branch on that fork. Feel free to propose any new features, the product itself is E2E functional with decent security for now as far as a livestreaming camera goes. How the user sets up this device on their network is up to their own discretion, so features are the most welcome thing to contribute! Please make an Issue if you find any bugs 
 
