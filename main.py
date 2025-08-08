@@ -14,6 +14,8 @@ from picamera2.outputs import FfmpegOutput, FileOutput
 
 resolution = (2048, 1080)
 
+timeout_limit = 120
+
 def main():
     os.environ['LOGGED_IN'] = 'f'
     os.environ['CLIENT_IP'] = '-1'
@@ -30,7 +32,10 @@ def main():
 
         server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
 
-        server.serve_forever()
+        server.timeout = timeout_limit
+        server.handle_timeout = lambda : server.timeout_function()
+        while True:
+            server.handle_request()
     finally:
         picam.stop_recording()
 

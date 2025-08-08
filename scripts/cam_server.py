@@ -25,7 +25,7 @@ output = StreamingOutput()
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
     global output
-
+        
     def do_POST(self):
         if self.path == '/otp':
             content_length = int(self.headers['content-length'])
@@ -151,3 +151,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
+    def timeout_function(self):
+        if os.environ['LOGGED_IN'] == 't':
+            os.environ['LOGGED_IN'] = 'f'
+            print('\nTimed out, user has been logged out\n')
